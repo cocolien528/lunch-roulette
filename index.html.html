@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天午餐吃什麼？</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 { color: #ff6b6b; }
+
+        #display-area {
+            font-size: 2.5rem;
+            font-weight: bold;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            border: 4px dashed #ffd93d;
+            border-radius: 10px;
+            color: #333;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        #start-btn {
+            background-color: #4fabff;
+            color: white;
+            width: 100%;
+        }
+
+        #start-btn:hover { background-color: #0084ff; }
+
+        #start-btn:disabled { background-color: #ccc; }
+
+        .input-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 5px;
+        }
+
+        input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        li {
+            background: #fff9db;
+            margin: 5px 0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .del-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>午餐大轉盤</h1>
+    
+    <div id="display-area">準備好了嗎？</div>
+
+    <div class="controls">
+        <button id="start-btn" onclick="spin()">開始抽選！</button>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="new-item" placeholder="新增想吃的食物...">
+        <button onclick="addItem()" style="background: #51cf66; color: white;">新增</button>
+    </div>
+
+    <ul id="item-list">
+        <!-- 初始名單 -->
+    </ul>
+</div>
+
+<script>
+    let options = ["排骨飯", "牛肉麵", "便利商店", "摩斯漢堡", "義大利麵", "水餃", "健康餐盒", "麥當勞"];
+    const displayArea = document.getElementById('display-area');
+    const startBtn = document.getElementById('start-btn');
+    const listElement = document.getElementById('item-list');
+
+    // 初始化列表
+    function updateList() {
+        listElement.innerHTML = '';
+        options.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                ${item}
+                <button class="del-btn" onclick="removeItem(${index})">刪除</button>
+            `;
+            listElement.appendChild(li);
+        });
+    }
+
+    // 新增選項
+    function addItem() {
+        const input = document.getElementById('new-item');
+        const value = input.value.trim();
+        if (value) {
+            options.push(value);
+            input.value = '';
+            updateList();
+        }
+    }
+
+    // 刪除選項
+    function removeItem(index) {
+        if (options.length > 1) {
+            options.splice(index, 1);
+            updateList();
+        } else {
+            alert("至少要留一個選項吧！");
+        }
+    }
+
+    // 執行轉盤邏輯
+    function spin() {
+        if (options.length === 0) return;
+
+        startBtn.disabled = true;
+        let counter = 0;
+        const totalSteps = 20; // 滾動次數
+        
+        const timer = setInterval(() => {
+            const randomIndex = Math.floor(Math.random() * options.length);
+            displayArea.innerText = options[randomIndex];
+            counter++;
+
+            if (counter >= totalSteps) {
+                clearInterval(timer);
+                startBtn.disabled = false;
+                displayArea.style.color = '#e67e22'; // 最終結果變色
+                setTimeout(() => {
+                    displayArea.style.color = '#333';
+                }, 1000);
+            }
+        }, 100);
+    }
+
+    // 初始呼叫
+    updateList();
+</script>
+
+</body>
+</html>
